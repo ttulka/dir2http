@@ -44,18 +44,6 @@ func TestResponseOk(t *testing.T) {
   }
 }
 
-func TestPostNotAccepted(t *testing.T) {
-  res, err := client.Post("http://localhost:1234", "plain/text", strings.NewReader("test"))
-  if err != nil {
-    t.Fatal(err)
-  }
-  defer res.Body.Close()
-  
-  if res.StatusCode != 405 {
-    t.Errorf("Expected the response status code to be %d, but got %d.", 405, res.StatusCode)
-  }
-}
-
 func TestIndexReturnedForRoot(t *testing.T) {
   res, err := client.Get("http://localhost:1234")
   if err != nil {
@@ -165,63 +153,6 @@ func TestPageIsReturned(t *testing.T) {
   body := string(b)
   if !strings.Contains(body, "<title>dir2http - next</title>") {
     t.Errorf("Expected the response body to contain '%v', but got '%v'.", "<title>dir2http - index</title>", body)
-  }
-}
-
-func TestUrlIsRedirectedToNormalizedOne(t *testing.T) {
-  res, err := client.Get("http://localhost:1234////page//next.html")
-  if err != nil {
-    t.Fatal(err)
-  }
-  defer res.Body.Close()
-  
-  if res.StatusCode != 302 {
-    t.Errorf("Expected the response status code to be %d, but got %d.", 302, res.StatusCode)
-  }
-  if res.Header.Get("Location") != "/page/next.html" {
-    t.Errorf("Expected the response 'Location' header to be '%v', but got '%v'.", "/page/next.html", res.Header.Get("Location"))
-  }
-}
-
-func TestDirUrlIsRedirectedToNormalizedOne(t *testing.T) {
-  res, err := client.Get("http://localhost:1234////page//")
-  if err != nil {
-    t.Fatal(err)
-  }
-  defer res.Body.Close()
-  
-  if res.StatusCode != 302 {
-    t.Errorf("Expected the response status code to be %d, but got %d.", 302, res.StatusCode)
-  }
-  if res.Header.Get("Location") != "/page" {
-    t.Errorf("Expected the response 'Location' header to be '%v', but got '%v'.", "/page", res.Header.Get("Location"))
-  }
-}
-
-func TestDirUrlIsRedirectedToEndingSlash(t *testing.T) {
-  res, err := client.Get("http://localhost:1234/page")
-  if err != nil {
-    t.Fatal(err)
-  }
-  defer res.Body.Close()
-  
-  if res.StatusCode != 302 {
-    t.Errorf("Expected the response status code to be %d, but got %d.", 302, res.StatusCode)
-  }
-  if res.Header.Get("Location") != "/page/" {
-    t.Errorf("Expected the response 'Location' header to be '%v', but got '%v'.", "/page/", res.Header.Get("Location"))
-  }
-}
-
-func TestDirWithoutIndexForbidden(t *testing.T) {
-  res, err := client.Get("http://localhost:1234/empty/")
-  if err != nil {
-    t.Fatal(err)
-  }
-  defer res.Body.Close()
-  
-  if res.StatusCode != 403 {
-    t.Errorf("Expected the response status code to be %d, but got %d.", 403, res.StatusCode)
   }
 }
 
